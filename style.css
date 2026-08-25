@@ -183,6 +183,54 @@ td.id { color: #9aa3b2; font-size: 12px; width: 60px; }
   position: sticky; float: right; top: 0; border: 0; background: #f1f5f9;
   width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 24px;
 }
+.detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+.detail-source {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 0;
+}
+.detail-position {
+  color: #8b95a7;
+  font-size: 11px;
+}
+.detail-nav {
+  display: flex;
+  gap: 7px;
+}
+.detail-nav-btn {
+  border: 1px solid var(--line);
+  background: white;
+  color: #475569;
+  border-radius: 9px;
+  padding: 7px 11px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+.detail-nav-btn:hover:not(:disabled) {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+.detail-nav-btn.primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+.detail-nav-btn.primary:hover:not(:disabled) {
+  background: var(--primary-dark);
+}
+.detail-nav-btn:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
 .detail-source { margin-bottom: 12px; }
 .detail-title { font: 600 26px/1.35 "Kanit"; margin: 0 50px 22px 0; }
 .detail-section { margin-top: 24px; }
@@ -229,4 +277,17 @@ footer {
   table { min-width: 760px; }
   .modal-panel { padding: 22px; margin: 3vh auto; max-height: 94vh; }
   footer { flex-direction: column; gap: 5px; }
+}
+
+@media (max-width: 600px) {
+  .detail-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .detail-nav {
+    width: 100%;
+  }
+  .detail-nav-btn {
+    flex: 1;
+  }
 }

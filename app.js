@@ -1,7 +1,22 @@
 const SOURCES = [
-  { key: "copyright", file: "Copyright.json", label: "Copyright", className: "copyright" },
-  { key: "protect", file: "Protect.json", label: "Protection", className: "protect" },
-  { key: "trademark", file: "Trademark.json", label: "Trademark", className: "trademark" }
+  {
+    key: "copyright",
+    file: "Copyright.json",
+    label: "Copyright",
+    className: "copyright",
+  },
+  {
+    key: "protect",
+    file: "Protect.json",
+    label: "Protection",
+    className: "protect",
+  },
+  {
+    key: "trademark",
+    file: "Trademark.json",
+    label: "Trademark",
+    className: "trademark",
+  },
 ];
 
 let allRecords = [];
@@ -14,18 +29,20 @@ const $ = (id) => document.getElementById(id);
 
 async function loadData() {
   try {
-    const loaded = await Promise.all(SOURCES.map(async source => {
-      const response = await fetch(source.file);
-      if (!response.ok) throw new Error(`โหลด ${source.file} ไม่สำเร็จ`);
-      const data = await response.json();
-      return data.map((item, index) => ({
-        ...item,
-        _source: source.key,
-        _sourceLabel: source.label,
-        _sourceClass: source.className,
-        _localId: index + 1
-      }));
-    }));
+    const loaded = await Promise.all(
+      SOURCES.map(async (source) => {
+        const response = await fetch(source.file);
+        if (!response.ok) throw new Error(`โหลด ${source.file} ไม่สำเร็จ`);
+        const data = await response.json();
+        return data.map((item, index) => ({
+          ...item,
+          _source: source.key,
+          _sourceLabel: source.label,
+          _sourceClass: source.className,
+          _localId: index + 1,
+        }));
+      }),
+    );
 
     allRecords = loaded.flat();
     updateStats();
@@ -44,7 +61,7 @@ function updateStats() {
   $("heroTotal").textContent = allRecords.length.toLocaleString("th-TH");
   $("count-all").textContent = allRecords.length;
   for (const source of SOURCES) {
-    const count = allRecords.filter(x => x._source === source.key).length;
+    const count = allRecords.filter((x) => x._source === source.key).length;
     $(`count-${source.key}`).textContent = count;
   }
 
@@ -59,16 +76,20 @@ function updateStats() {
 function applyFilters() {
   const query = $("search").value.trim().toLowerCase();
 
-  filteredRecords = allRecords.filter(item => {
+  filteredRecords = allRecords.filter((item) => {
     if (currentSource !== "all" && item._source !== currentSource) return false;
     if (!query) return true;
 
     const searchable = [
-      item.question, item.issues, item.answer,
+      item.question,
+      item.issues,
+      item.answer,
       ...(item.key_facts || []),
       ...(item.legal_basis || []),
-      ...(item.reasoning || [])
-    ].join(" ").toLowerCase();
+      ...(item.reasoning || []),
+    ]
+      .join(" ")
+      .toLowerCase();
 
     return searchable.includes(query);
   });
@@ -89,7 +110,8 @@ function render() {
   $("clearSearch").classList.toggle("hidden", !$("search").value.trim());
 
   if (!pageRecords.length) {
-    $("tableWrap").innerHTML = `<div class="empty">ไม่พบข้อมูลที่ตรงกับการค้นหา</div>`;
+    $("tableWrap").innerHTML =
+      `<div class="empty">ไม่พบข้อมูลที่ตรงกับการค้นหา</div>`;
   } else {
     $("tableWrap").innerHTML = `
       <table>
@@ -102,7 +124,9 @@ function render() {
           </tr>
         </thead>
         <tbody>
-          ${pageRecords.map((item, i) => `
+          ${pageRecords
+            .map(
+              (item, i) => `
             <tr data-index="${start + i}">
               <td class="id">${start + i + 1}</td>
               <td>
@@ -112,13 +136,20 @@ function render() {
               <td><span class="source-pill ${item._sourceClass}">${escapeHtml(item._sourceLabel)}</span></td>
               <td><div class="answer-preview">${escapeHtml(item.answer || "")}</div></td>
             </tr>
-          `).join("")}
+          `,
+            )
+            .join("")}
         </tbody>
       </table>
     `;
-    $("tableWrap").querySelectorAll("tbody tr").forEach(row => {
-      row.addEventListener("click", () => openDetail(filteredRecords[Number(row.dataset.index)]));
-    });
+    $("tableWrap")
+      .querySelectorAll("tbody tr")
+      .forEach((row) => {
+        row.addEventListener("click", () => {
+          const index = Number(row.dataset.index);
+          openDetail(filteredRecords[index], index);
+        });
+      });
   }
 
   renderPagination(totalPages);
@@ -126,37 +157,66 @@ function render() {
 
 function renderPagination(totalPages) {
   const p = $("pagination");
-  if (totalPages <= 1) { p.innerHTML = ""; return; }
+  if (totalPages <= 1) {
+    p.innerHTML = "";
+    return;
+  }
 
   const buttons = [];
-  buttons.push(`<button class="page-btn" ${currentPage === 1 ? "disabled" : ""} data-page="${currentPage - 1}">‹</button>`);
+  buttons.push(
+    `<button class="page-btn" ${currentPage === 1 ? "disabled" : ""} data-page="${currentPage - 1}">‹</button>`,
+  );
 
   const range = [];
   for (let i = 1; i <= totalPages; i++) {
-    if (i === 1 || i === totalPages || Math.abs(i - currentPage) <= 2) range.push(i);
+    if (i === 1 || i === totalPages || Math.abs(i - currentPage) <= 2)
+      range.push(i);
     else if (range[range.length - 1] !== "…") range.push("…");
   }
 
-  range.forEach(item => {
+  range.forEach((item) => {
     if (item === "…") buttons.push(`<span>…</span>`);
-    else buttons.push(`<button class="page-btn ${item === currentPage ? "active" : ""}" data-page="${item}">${item}</button>`);
+    else
+      buttons.push(
+        `<button class="page-btn ${item === currentPage ? "active" : ""}" data-page="${item}">${item}</button>`,
+      );
   });
 
-  buttons.push(`<button class="page-btn" ${currentPage === totalPages ? "disabled" : ""} data-page="${currentPage + 1}">›</button>`);
+  buttons.push(
+    `<button class="page-btn" ${currentPage === totalPages ? "disabled" : ""} data-page="${currentPage + 1}">›</button>`,
+  );
   p.innerHTML = buttons.join("");
-  p.querySelectorAll("[data-page]").forEach(btn => btn.addEventListener("click", () => {
-    currentPage = Number(btn.dataset.page);
-    render();
-    window.scrollTo({ top: $("tableWrap").getBoundingClientRect().top + window.scrollY - 100, behavior: "smooth" });
-  }));
+  p.querySelectorAll("[data-page]").forEach((btn) =>
+    btn.addEventListener("click", () => {
+      currentPage = Number(btn.dataset.page);
+      render();
+      window.scrollTo({
+        top: $("tableWrap").getBoundingClientRect().top + window.scrollY - 100,
+        behavior: "smooth",
+      });
+    }),
+  );
 }
 
-function openDetail(item) {
-  const list = (arr) => (arr || []).map(x => `<li>${escapeHtml(x)}</li>`).join("");
-  const facts = (item.key_facts || []).map(x => `<span class="fact">${escapeHtml(x)}</span>`).join("");
+function openDetail(item, index = filteredRecords.indexOf(item)) {
+  const list = (arr) =>
+    (arr || []).map((x) => `<li>${escapeHtml(x)}</li>`).join("");
+  const facts = (item.key_facts || [])
+    .map((x) => `<span class="fact">${escapeHtml(x)}</span>`)
+    .join("");
 
   $("modalContent").innerHTML = `
-    <div class="detail-source"><span class="source-pill ${item._sourceClass}">${escapeHtml(item._sourceLabel)}</span></div>
+    <div class="detail-header">
+      <div class="detail-source">
+        <span class="source-pill ${item._sourceClass}">${escapeHtml(item._sourceLabel)}</span>
+        <span class="detail-position">รายการที่ ${index + 1} / ${filteredRecords.length}</span>
+      </div>
+      <div class="detail-nav">
+        <button class="detail-nav-btn" id="prevDetail" ${index <= 0 ? "disabled" : ""}>← ก่อนหน้า</button>
+        <button class="detail-nav-btn primary" id="nextDetail" ${index >= filteredRecords.length - 1 ? "disabled" : ""}>ถัดไป →</button>
+      </div>
+    </div>
+
     <h2 class="detail-title">${escapeHtml(item.question)}</h2>
 
     <section class="detail-section">
@@ -176,7 +236,7 @@ function openDetail(item) {
 
     <section class="detail-section">
       <h3>Reasoning / เหตุผล</h3>
-      <ol>${list(item.reasoning)}</ol>
+      <ul>${list(item.reasoning)}</ul>
     </section>
 
     <section class="detail-section">
@@ -188,6 +248,18 @@ function openDetail(item) {
   $("modal").classList.remove("hidden");
   $("modal").setAttribute("aria-hidden", "false");
   document.body.style.overflow = "hidden";
+
+  $("prevDetail").addEventListener("click", () => {
+    if (index > 0) {
+      openDetail(filteredRecords[index - 1], index - 1);
+    }
+  });
+
+  $("nextDetail").addEventListener("click", () => {
+    if (index < filteredRecords.length - 1) {
+      openDetail(filteredRecords[index + 1], index + 1);
+    }
+  });
 }
 
 function closeModal() {
@@ -205,9 +277,11 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-document.querySelectorAll(".dataset-tab").forEach(btn => {
+document.querySelectorAll(".dataset-tab").forEach((btn) => {
   btn.addEventListener("click", () => {
-    document.querySelectorAll(".dataset-tab").forEach(x => x.classList.remove("active"));
+    document
+      .querySelectorAll(".dataset-tab")
+      .forEach((x) => x.classList.remove("active"));
     btn.classList.add("active");
     currentSource = btn.dataset.source;
     applyFilters();
@@ -220,13 +294,33 @@ $("clearSearch").addEventListener("click", () => {
   applyFilters();
   $("search").focus();
 });
-$("pageSize").addEventListener("change", e => {
+$("pageSize").addEventListener("change", (e) => {
   pageSize = Number(e.target.value);
   currentPage = 1;
   render();
 });
 $("modalClose").addEventListener("click", closeModal);
 $("modalBackdrop").addEventListener("click", closeModal);
-document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+document.addEventListener("keydown", (e) => {
+  if ($("modal").classList.contains("hidden")) return;
+
+  if (e.key === "Escape") {
+    closeModal();
+  } else if (e.key === "ArrowRight") {
+    const currentTitle =
+      $("modalContent").querySelector(".detail-title")?.textContent;
+    const index = filteredRecords.findIndex((x) => x.question === currentTitle);
+    if (index >= 0 && index < filteredRecords.length - 1) {
+      openDetail(filteredRecords[index + 1], index + 1);
+    }
+  } else if (e.key === "ArrowLeft") {
+    const currentTitle =
+      $("modalContent").querySelector(".detail-title")?.textContent;
+    const index = filteredRecords.findIndex((x) => x.question === currentTitle);
+    if (index > 0) {
+      openDetail(filteredRecords[index - 1], index - 1);
+    }
+  }
+});
 
 loadData();
