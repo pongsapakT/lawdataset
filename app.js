@@ -23,6 +23,12 @@ const SOURCES = [
     label: "Copyright Case",
     className: "copyrightcase",
   },
+  {
+    key: "infringement",
+    file: "Infringement.json",
+    label: "Infringement",
+    className: "infringement",
+  }
 ];
 
 let allRecords = [];
@@ -77,6 +83,7 @@ function updateStats() {
     <div class="stat"><div class="label">Protection</div><div class="value">${$("count-protect").textContent}</div></div>
     <div class="stat"><div class="label">Trademark</div><div class="value">${$("count-trademark").textContent}</div></div>
     <div class="stat"><div class="label">Copyright Case</div><div class="value">${$("count-copyrightcase").textContent}</div></div>
+    <div class="stat"><div class="label">Infringement</div><div class="value">${$("count-infringement").textContent}</div></div>
   `;
 }
 
