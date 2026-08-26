@@ -110,6 +110,7 @@ h1 span { color: var(--primary); }
 .dot.copyright { background: #2563eb; }
 .dot.protect { background: #059669; }
 .dot.trademark { background: #d97706; }
+.dot.copyrightcase { background: #dc2626; }
 .sidebar-divider { height: 1px; background: var(--line); margin: 20px 0; }
 .sidebar-text { color: var(--muted); font-size: 12px; line-height: 1.8; margin: 0; }
 
@@ -157,6 +158,7 @@ td.id { color: #9aa3b2; font-size: 12px; width: 60px; }
 .source-pill.copyright { color: #1d4ed8; background: #eff6ff; }
 .source-pill.protect { color: #047857; background: #ecfdf5; }
 .source-pill.trademark { color: #b45309; background: #fffbeb; }
+.source-pill.copyrightcase { color: #b91c1c; background: #fef2f2; }
 .answer-preview { font-size: 12px; line-height: 1.55; max-width: 390px; color: #465166; }
 
 .loading, .empty { padding: 55px 20px; text-align: center; color: var(--muted); }
