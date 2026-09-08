@@ -7,25 +7,25 @@ const SOURCES = [
   },
   {
     key: "protect",
-    file: "Protectjson",
+    file: "Protect.json",
     label: "Protection",
     className: "protect",
   },
   {
     key: "trademark",
-    file: "Trademarkjson",
+    file: "Trademark.json",
     label: "Trademark",
     className: "trademark",
   },
   {
     key: "copyrightcase",
-    file: "CopyrightCasejson",
+    file: "CopyrightCase.json",
     label: "Copyright Case",
     className: "copyrightcase",
   },
   {
     key: "infringement",
-    file: "Infringementjson",
+    file: "Infringement.json",
     label: "Infringement",
     className: "infringement",
   }
